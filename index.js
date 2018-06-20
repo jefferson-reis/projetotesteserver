@@ -3,6 +3,8 @@ var app        = express();                 // define our app using express
 var bodyParser = require('body-parser');
 const MongoClient = require('mongodb').MongoClient;
 
+let ObjectId = require('mongodb').ObjectID;
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -104,4 +106,62 @@ app.post("/login", (req,res) => {
     });
 
 });
+
+
+
+app.patch("/user/email", (req,res) => {
+
+    let id = req.body.id;
+    let email = req.body.email;
+
+    let filter = {
+        _id: ObjectId(id)
+
+    } 
+
+    let update = { $set: { "email" : email } }
+
     
+    db.collection('usuarios').updateOne(filter, update, (err, result) => {
+
+        if(err) {
+
+            console.error(JSON.stringify(err));
+            return res.json({ erro: true });
+
+        }
+
+        return res.json({ erro: false, resultado: result})
+
+    });
+
+});
+
+
+
+
+app.delete("/user/:_id", (req,res) => {
+
+    let id = req.params._id;
+
+    //console.log('id: ' + id);//
+   
+    let filter = {
+        _id: ObjectId(id)
+    } 
+
+    
+    db.collection('usuarios').deleteOne(filter, (err, result) => {
+
+        if(err) {
+
+            console.error(JSON.stringify(err));
+            return res.json({ erro: true });
+
+        }
+
+        return res.json({ erro: false, resultado: result})
+
+    });
+ 
+});
